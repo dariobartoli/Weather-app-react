@@ -13,17 +13,50 @@ function App() {
 
   useEffect(() => {
     (async()=>{
-      setCountries(await getCountries());
+      const paises = await getCountries()
+      const paisesAsc = paises.sort((a,b) => {
+        if(a.name.common > b.name.common){
+          return 1;
+        }
+        if(a.name.common < b.name.common){
+          return -1;
+        }
+        return 0
+      })
+      setCountries(paisesAsc);
     })();
   }, []);
 
+
 //si e.current.value está vacio que no haga nada sino que haga el await
   const countryHandler = async e => {
-    e.currentTarget.value && setCities(await getCities(e.currentTarget.value))
-    setWeather(null)
+    if(e.currentTarget.value === ""){
+      setWeather(null)
+      setCities([])
+    }else{
+      const ciudades = await getCities(e.currentTarget.value)
+      const ciudadesAsc = ciudades.sort((a,b) =>{
+        if(a.name> b.name){
+          return 1;
+        }
+        if(a.name< b.name){
+          return -1;
+        }
+        return 0
+      })
+      setCities(ciudadesAsc)
+      setWeather(null)
+    }
   }
+  
 
-  const cityHandler = async e => e.currentTarget.value && setWeather(await getCityWeather(e.currentTarget.value))
+  const cityHandler = async e => {
+  if(e.currentTarget.value === ""){
+    setWeather(null)
+  }else{
+      setWeather(await getCityWeather(e.currentTarget.value))
+    }
+  }
 
 
 
@@ -37,7 +70,7 @@ function App() {
           <label className="label">Choise country: </label>
           <select onChange={countryHandler} className="select">
             <option value="">choise</option>
-            {countries.map(country => <option key={country.cca2} value={country.cca2}>{country.name.common}</option>)}
+            {countries.map(country => <option key={country.cca2} value={country.cca2}> {country.name.common}</option>)}
           </select>
         </div>
 
